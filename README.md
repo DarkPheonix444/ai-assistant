@@ -23,5 +23,3 @@ Nova Assistant is a desktop-based AI voice assistant built using Python. It inte
   - OpenCV
   - Other standard Python modules (os, datetime, webbrowser, subprocess, etc.)
 
-## Project Structure
-
