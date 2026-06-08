@@ -3,7 +3,7 @@ from pathlib import Path
 from .chunker import Chunker
 from .embedder import Embedder
 from .vector_store import VectorStore
-from .schemas import ChunkMetadata
+from .schema import ChunkMetadata
 
 
 class EmbeddingManager:

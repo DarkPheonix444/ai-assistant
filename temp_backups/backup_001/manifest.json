@@ -1,0 +1,9 @@
+{
+    "task_id": "001",
+    "files": [
+        {
+            "original": "test.txt",
+            "backup": "test.txt"
+        }
+    ]
+}

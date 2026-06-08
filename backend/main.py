@@ -1,19 +1,41 @@
-from core.project_loader.loader import ProjectLoader
+from tools.file_editor.editor import FileEditor
+from tools.file_editor.backup import BackupManager
+from tools.file_editor.rollback import RollbackManager
 
 
-def main():
+editor = FileEditor()
+backup = BackupManager()
+rollback = RollbackManager()
 
-    loader = ProjectLoader()
+file_path = "test.txt"
 
-    project = loader.load(
-        r"D:\Projects\2d_to_3d"
-    )
+# Create file
+editor.write(
+    file_path,
+    "Original Content"
+)
 
-    print(f"Files: {project.total_files}")
+# Backup
+backup_dir = backup.create_backup(
+    task_id="001",
+    files=[file_path]
+)
 
-    for file in project.files[:10]:
-        print(file.path)
+# Modify
+editor.write(
+    file_path,
+    "Modified Content"
+)
 
+print(
+    editor.read(file_path)
+)
 
-if __name__ == "__main__":
-    main()
+# Rollback
+rollback.rollback(
+    backup_dir
+)
+
+print(
+    editor.read(file_path)
+)
