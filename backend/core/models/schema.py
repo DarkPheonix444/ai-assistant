@@ -8,4 +8,12 @@ class ModelConfig:
 
     model_type: str
 
-    model_path: str
+    model_path: str | None
+
+    max_tokens: int
+
+    temperature: float
+
+    is_available: bool
+
+    loaded: bool = False
