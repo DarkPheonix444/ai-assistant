@@ -1,4 +1,9 @@
 from .prompts import PLANNER_SYSTEM_PROMPT
+from .schema import Plan, Todo
+
+import json
+import uuid
+
 
 class PlannerAgent:
 
@@ -9,8 +14,8 @@ class PlannerAgent:
         self.model_manager = model_manager
 
     def create_plan(
-    self,
-    user_request: str
+        self,
+        user_request: str
     ):
 
         prompt = (
@@ -24,6 +29,27 @@ class PlannerAgent:
             prompt
         )
 
-        print(response)
+        data = json.loads(response)
 
-        return response
+        todos = []
+
+        for index, item in enumerate(
+            data["todos"],
+            start=1
+        ):
+
+            todos.append(
+                Todo(
+                    id=index,
+                    title=item["title"],
+                    description=item["description"]
+                )
+            )
+
+        plan = Plan(
+            task_id=str(uuid.uuid4()),
+            user_request=user_request,
+            todos=todos
+        )
+
+        return plan

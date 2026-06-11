@@ -1,0 +1,62 @@
+{
+    "task_id": "aa8747b5-4251-4c5a-b316-030e8e265bd5",
+    "user_request": "Create JWT authentication for a Django application",
+    "todos": [
+        {
+            "id": 1,
+            "title": "Install Django JWT package",
+            "description": "Run `pip install djangorestframework-jwt` to install the package.",
+            "status": "pending"
+        },
+        {
+            "id": 2,
+            "title": "Configure settings.py",
+            "description": "Add 'rest_framework_jwt' to the INSTALLED_APPS in settings.py.",
+            "status": "pending"
+        },
+        {
+            "id": 3,
+            "title": "Create JWT authentication views",
+            "description": "Create views for token authentication, e.g., `obtain_jwt_token` and `verify_jwt_token`.",
+            "status": "pending"
+        },
+        {
+            "id": 4,
+            "title": "Update urls.py",
+            "description": "Add URL patterns for the JWT authentication views.",
+            "status": "pending"
+        },
+        {
+            "id": 5,
+            "title": "Update models.py",
+            "description": "Add a method to generate JWT tokens for users.",
+            "status": "pending"
+        },
+        {
+            "id": 6,
+            "title": "Update serializers.py",
+            "description": "Create serializers for user authentication.",
+            "status": "pending"
+        },
+        {
+            "id": 7,
+            "title": "Update views.py",
+            "description": "Implement the JWT authentication views using the serializers.",
+            "status": "pending"
+        },
+        {
+            "id": 8,
+            "title": "Update middleware.py",
+            "description": "Add middleware to check JWT tokens for authenticated requests.",
+            "status": "pending"
+        },
+        {
+            "id": 9,
+            "title": "Test JWT authentication",
+            "description": "Write tests to ensure JWT authentication works as expected.",
+            "status": "pending"
+        }
+    ],
+    "current_todo": 0,
+    "status": "created"
+}
