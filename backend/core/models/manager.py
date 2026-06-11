@@ -1,7 +1,6 @@
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer
-)
+import gc
+
+from llama_cpp import Llama
 
 from .registry import MODEL_REGISTRY
 
@@ -10,17 +9,23 @@ class ModelManager:
 
     def __init__(self):
 
-        self.loaded_models = {}
+        self.active_model = None
 
-        self.loaded_tokenizers = {}
+        self.active_model_name = None
 
     def load_model(
         self,
         model_name: str
     ) -> bool:
 
-        if model_name in self.loaded_models:
+        if (
+            self.active_model is not None
+            and
+            self.active_model_name == model_name
+        ):
             return True
+
+        self.unload_model()
 
         config = MODEL_REGISTRY.get(
             model_name
@@ -36,48 +41,37 @@ class ModelManager:
                 f"Model not available: {model_name}"
             )
 
-        tokenizer = AutoTokenizer.from_pretrained(
-            config.model_path
+        self.active_model = Llama(
+            model_path=config.model_path,
+            n_ctx=config.context_window,
+            verbose=False
         )
 
-        model = AutoModelForCausalLM.from_pretrained(
-            config.model_path
-        )
-
-        self.loaded_models[
-            model_name
-        ] = model
-
-        self.loaded_tokenizers[
-            model_name
-        ] = tokenizer
+        self.active_model_name = model_name
 
         config.loaded = True
 
         return True
 
     def unload_model(
-        self,
-        model_name: str
+        self
     ) -> bool:
 
-        if model_name not in self.loaded_models:
+        if self.active_model is None:
             return False
 
-        del self.loaded_models[
-            model_name
-        ]
-
-        del self.loaded_tokenizers[
-            model_name
-        ]
-
         config = MODEL_REGISTRY.get(
-            model_name
+            self.active_model_name
         )
 
         if config:
             config.loaded = False
+
+        self.active_model = None
+
+        self.active_model_name = None
+
+        gc.collect()
 
         return True
 
@@ -87,24 +81,40 @@ class ModelManager:
     ) -> bool:
 
         return (
-            model_name
-            in self.loaded_models
+            self.active_model_name == model_name
         )
 
-    def get_model(
+    def get_model(self):
+
+        return self.active_model
+
+    def get_active_model_name(self):
+
+        return self.active_model_name
+
+    def generate(
         self,
-        model_name: str
-    ):
+        model_name: str,
+        prompt: str
+    ) -> str:
 
-        return self.loaded_models.get(
+        self.load_model(
             model_name
         )
 
-    def get_tokenizer(
-        self,
-        model_name: str
-    ):
-
-        return self.loaded_tokenizers.get(
+        config = MODEL_REGISTRY[
             model_name
+        ]
+
+        response = self.active_model.create_chat_completion(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=config.temperature,
+            max_tokens=config.max_tokens
         )
+
+        return response["choices"][0]["message"]["content"]

@@ -3,48 +3,33 @@ from .schema import ModelConfig
 
 MODEL_REGISTRY = {
 
-    "qwen_instruct": ModelConfig(
-
-        name="qwen_instruct",
-
+    "planner": ModelConfig(
+        name="planner",
         model_type="planner",
-
-        model_path=None,
-
+        model_path="models\planner\qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf",
+        context_window=8192,
         max_tokens=2048,
-
         temperature=0.2,
+        is_available=True
+    ),
 
+    "coder": ModelConfig(
+        name="coder",
+        model_type="coder",
+        model_path="models/qwen2.5-coder-7b.gguf",
+        context_window=8192,
+        max_tokens=4096,
+        temperature=0.1,
         is_available=False
     ),
 
-    "qwen_coder": ModelConfig(
-
-        name="qwen_coder",
-
-        model_type="coder",
-
-        model_path=None,
-
-        max_tokens=4096,
-
-        temperature=0.1,
-
-        is_available=False
-    ),
-
-    "deepseek_coder": ModelConfig(
-
-        name="deepseek_coder",
-
-        model_type="coder",
-
-        model_path=None,
-
-        max_tokens=4096,
-
-        temperature=0.1,
-
+    "reviewer": ModelConfig(
+        name="reviewer",
+        model_type="reviewer",
+        model_path="models/qwen2.5-7b-instruct.gguf",
+        context_window=8192,
+        max_tokens=2048,
+        temperature=0.0,
         is_available=False
     )
 }

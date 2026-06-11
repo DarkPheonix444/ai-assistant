@@ -1,41 +1,16 @@
-from tools.file_editor.editor import FileEditor
-from tools.file_editor.backup import BackupManager
-from tools.file_editor.rollback import RollbackManager
+from core.models.manager import ModelManager
 
+manager = ModelManager()
 
-editor = FileEditor()
-backup = BackupManager()
-rollback = RollbackManager()
+print("Loading planner...")
 
-file_path = "test.txt"
-
-# Create file
-editor.write(
-    file_path,
-    "Original Content"
+response = manager.generate(
+    "planner",
+    "Reply only with hello"
 )
 
-# Backup
-backup_dir = backup.create_backup(
-    task_id="001",
-    files=[file_path]
-)
+print(response)
 
-# Modify
-editor.write(
-    file_path,
-    "Modified Content"
-)
+manager.unload_model()
 
-print(
-    editor.read(file_path)
-)
-
-# Rollback
-rollback.rollback(
-    backup_dir
-)
-
-print(
-    editor.read(file_path)
-)
+print("Done")
