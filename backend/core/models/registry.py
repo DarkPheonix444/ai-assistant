@@ -8,7 +8,7 @@ MODEL_REGISTRY = {
         model_type="planner",
         model_path="models\planner\qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf",
         context_window=8192,
-        max_tokens=2048,
+        max_tokens=1024,
         temperature=0.2,
         is_available=True
     ),

@@ -1,16 +1,19 @@
 from core.models.manager import ModelManager
 
+from agents.planner.planner import PlannerAgent
+import time 
+
+start_time=time.perf_counter()
 manager = ModelManager()
 
-print("Loading planner...")
+planner = PlannerAgent(manager)
 
-response = manager.generate(
-    "planner",
-    "Reply only with hello"
+plan = planner.create_plan(
+    "Create JWT authentication for a Django application"
 )
+End_time = time.perf_counter()
 
-print(response)
+execution = End_time-start_time
 
-manager.unload_model()
-
-print("Done")
+print(plan)
+print(f"Execution time: {execution} seconds")
