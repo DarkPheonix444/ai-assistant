@@ -8,7 +8,9 @@ class ModelConfig:
 
     model_type: str
 
-    model_path: str | None
+    model_path: str
+
+    context_window: int
 
     max_tokens: int
 
