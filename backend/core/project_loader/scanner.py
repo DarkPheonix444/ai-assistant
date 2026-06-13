@@ -16,7 +16,7 @@ class ProjectScanner:
             if not path.is_file():
                 continue
 
-            if any(part in self.IGNORE_DIRS for part in path.parts):
+            if any(part in self.ignore_dirs for part in path.parts):
                 continue
 
             files.append(

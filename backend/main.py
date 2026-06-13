@@ -1,54 +1,78 @@
-from core.models.manager import ModelManager
+from core.project_loader.loader import ProjectLoader
 
-from agents.planner.planner import PlannerAgent
-
-from state.task_state import TaskState
-from agents.planner.schema import TodoStatus
-
-manager = ModelManager()
-
-planner = PlannerAgent(manager)
-
-state = TaskState()
-
-
-print("Creating plan...")
-
-plan = planner.create_plan(
-    "Create JWT authentication for a Django application"
+from core.embeddings.chunker import Chunker
+from core.embeddings.embedder import Embedder
+from core.embeddings.vector_store import VectorStore
+from core.embeddings.manager import EmbeddingManager
+from core.embeddings.model_loader import (
+    EmbeddingModelLoader
 )
 
-print("\nGenerated Plan:")
-print(plan)
 
-print("\nSaving Plan...")
-state.save_plan(plan)
+print("Loading project...")
 
-print("Saved!")
-state.update_todo_status(
-    plan.task_id,
-    1,
-    TodoStatus.COMPLETED
+loader = ProjectLoader()
+
+project = loader.load(
+    r"C:\Users\kanan\Desktop\ai-assistant\backend"
 )
 
-print("\nLoading Plan...")
-loaded_plan = state.load_plan(
-    plan.task_id
+print(
+    f"Files found: {project.total_files}"
 )
 
-print("\nLoaded Plan:")
-print(loaded_plan)
+print("\nLoading embedding model...")
 
-print("\nTodos:")
+model_loader = EmbeddingModelLoader()
 
-for todo in loaded_plan.todos:
+model = model_loader.load()
+
+embedder = Embedder(model)
+
+print("Model loaded")
+
+chunker = Chunker()
+
+vector_store = VectorStore(
+    dimension=384
+)
+
+embedding_manager = EmbeddingManager(
+    chunker,
+    embedder,
+    vector_store
+)
+
+print("\nIndexing project...")
+
+embedding_manager.index_project(
+    project.files
+)
+
+print(
+    f"Total vectors: "
+    f"{vector_store.total_vectors()}"
+)
+
+print("\nSearching...")
+
+results = embedding_manager.search(
+    "How would you add embeddings to planner?",
+    k=5
+)
+
+print("\nTop Results:\n")
+
+for result in results:
 
     print(
-        f"{todo.id}. "
-        f"{todo.title} "
-        f"[{todo.status}]"
+        f"File: {result.file_path}"
     )
-print(type(loaded_plan.status))
-manager.unload_model()
+
+    print(
+        f"Chunk ID: {result.chunk_id}"
+    )
+
+    print("-" * 50)
 
 print("\nDone")

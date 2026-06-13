@@ -25,6 +25,11 @@ class VectorStore:
         vectors = vectors.astype(
             np.float32
         )
+        print("\n----- VECTOR STORE -----")
+        print("Shape:", vectors.shape)
+        print("Dimension:", self.dimension)
+        print("Dtype:", vectors.dtype)
+        print("------------------------\n")
 
         self.index.add(vectors)
 

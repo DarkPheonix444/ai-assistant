@@ -32,7 +32,8 @@ class EmbeddingManager:
         )
 
         chunks = self.chunker.chunk(text)
-
+        if not chunks:
+            return
         metadata = []
 
         for idx, chunk_text in enumerate(chunks):
@@ -50,12 +51,29 @@ class EmbeddingManager:
         vectors = self.embedder.embed(
             chunks
         )
+        print("\n========== DEBUG ==========")
+        print("File:", file_path)
+        print("Chunks:", len(chunks))
+        print("Metadata:", len(metadata))
+        print("Vectors Type:", type(vectors))
+        print("Vectors Shape:", vectors.shape)
+        print("===========================\n")
+
 
         self.vector_store.add(
             vectors,
             metadata
         )
+    def index_project(
+        self,
+        files
+        ) -> None:
 
+        for file in files:
+
+            self.index_file(
+                str(file.path)
+                )  
     def search(
         self,
         query: str,

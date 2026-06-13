@@ -1,0 +1,38 @@
+{
+    "task_id": "cbc44c7e-7aba-4822-968e-b485537d8237",
+    "user_request": "how would u add teh embedding to the planner agent",
+    "todos": [
+        {
+            "id": 1,
+            "title": "Analyze existing planner agent",
+            "description": "Review planner.py, prompts.py, and schema.py to understand the current functionality and identify suitable locations for embedding integration.",
+            "status": "completed"
+        },
+        {
+            "id": 2,
+            "title": "Determine embedding usage",
+            "description": "Decide how embeddings will be used within the planner agent (e.g., for context understanding, decision-making, etc.).",
+            "status": "pending"
+        },
+        {
+            "id": 3,
+            "title": "Update schema",
+            "description": "Modify schema.py in the planner directory to include new fields or methods related to embedding usage.",
+            "status": "pending"
+        },
+        {
+            "id": 4,
+            "title": "Integrate embedding manager",
+            "description": "Import the vector_store module from core/embeddings and integrate it into planner.py to utilize embeddings.",
+            "status": "pending"
+        },
+        {
+            "id": 5,
+            "title": "Test embedding integration",
+            "description": "Run tests to ensure that the embedding integration does not break existing functionality and that new features work as expected.",
+            "status": "pending"
+        }
+    ],
+    "current_todo": 0,
+    "status": "created"
+}

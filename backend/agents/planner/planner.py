@@ -15,11 +15,14 @@ class PlannerAgent:
 
     def create_plan(
         self,
-        user_request: str
+        user_request: str,
+        project_tree: str
     ):
 
         prompt = (
             PLANNER_SYSTEM_PROMPT
+            + "\n\nRepository Structure:\n"
+            + project_tree
             + "\n\nUser Request:\n"
             + user_request
         )

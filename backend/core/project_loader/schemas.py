@@ -14,3 +14,5 @@ class ProjectMetadata:
     root: Path
     files: list[ProjectFile]
     total_files: int
+    tree:dict
+    tree_text: str 
