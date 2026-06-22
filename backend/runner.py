@@ -1,65 +1,108 @@
+import time
+
 from core.models.manager import ModelManager
 
-from agents.planner.planner import PlannerAgent
-
-from state.task_state import TaskState
-
-from agents.planner.schema import TodoStatus
-
-from core.project_loader.loader import ProjectLoader
-
-
-manager = ModelManager()
-
-planner = PlannerAgent(manager)
-
-state = TaskState()
-
-loader = ProjectLoader()
-
-
-project = loader.load(
-    r"C:\Users\kanan\Desktop\ai-assistant\backend"
+from agents.coder.coder import (
+    CoderAgent
 )
 
-print("Creating plan...")
-
-plan = planner.create_plan(
-    "how would u add teh embedding to the planner agent",
-    project.tree_text
+from executor.code_executor import (
+    CodeExecutor
 )
 
-print("\nGenerated Plan:")
-print(plan)
-
-print("\nSaving Plan...")
-state.save_plan(plan)
-
-print("Saved!")
-
-state.update_todo_status(
-    plan.task_id,
-    1,
-    TodoStatus.COMPLETED
+from tools.file_editor.editor import (
+    FileEditor
 )
 
-loaded_plan = state.load_plan(
-    plan.task_id
+from tools.file_editor.diff import (
+    DiffGenerator
 )
 
-print("\nLoaded Plan:")
-print(loaded_plan)
+from tools.file_editor.backup import (
+    BackupManager
+)
 
-print("\nTodos:")
+from tools.file_editor.rollback import (
+    RollbackManager
+)
 
-for todo in loaded_plan.todos:
+from tools.file_editor.transaction import (
+    TransactionManager
+)
+
+
+PROJECT_ROOT = (
+    r"C:\Users\kanan\Desktop\ai_testing"
+)
+
+total_start = time.time()
+
+print("Loading model...")
+
+model_manager = ModelManager()
+
+coder = CoderAgent(
+    model_manager
+)
+
+print("Model loaded")
+
+
+backup_manager = BackupManager()
+
+rollback_manager = RollbackManager()
+
+transaction_manager = TransactionManager(
+    backup_manager,
+    rollback_manager
+)
+
+file_editor = FileEditor()
+
+diff_generator = DiffGenerator()
+
+executor = CodeExecutor(
+    transaction_manager,
+    file_editor,
+    diff_generator
+)
+
+print("Executor loaded")
+
+print("\nGenerating code...\n")
+
+result = coder.generate_code(
+    task_description=
+    "Files do not exist. "
+    "Create add.py with add(a,b). "
+    "Create main.py. "
+    "Import add from add.py. "
+    "Print add(5,7).",
+    context=
+    f"Project root: {PROJECT_ROOT}"
+)
+
+print("\nExecuting...\n")
+
+execution = executor.execute(
+    result.files
+)
+
+for change in execution["changes"]:
 
     print(
-        f"{todo.id}. "
-        f"{todo.title} "
-        f"[{todo.status}]"
+        f"\nModified: {change['path']}"
     )
 
-manager.unload_model()
+    print(
+        change["diff"]
+    )
 
-print("\nDone")
+print("\nUnloading model...")
+
+model_manager.unload_model()
+
+print(
+    f"\nTotal Runtime: "
+    f"{time.time() - total_start:.2f}s"
+)

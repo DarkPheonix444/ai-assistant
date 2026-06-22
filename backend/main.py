@@ -1,134 +1,94 @@
 import time
 
-from core.project_loader.loader import ProjectLoader
-
-from core.embeddings.chunker import Chunker
-from core.embeddings.embedder import Embedder
-from core.embeddings.vector_store import VectorStore
-from core.embeddings.manager import EmbeddingManager
-from core.embeddings.model_loader import (
-    EmbeddingModelLoader
-)
-
 from core.models.manager import ModelManager
 
 from agents.planner.planner import (
     PlannerAgent
 )
 
+from agents.coder.coder import (
+    CoderAgent
+)
+
+from executor.code_executor import (
+    CodeExecutor
+)
+
+from tools.file_editor.editor import (
+    FileEditor
+)
+
+from tools.file_editor.diff import (
+    DiffGenerator
+)
+
+from tools.file_editor.backup import (
+    BackupManager
+)
+
+from tools.file_editor.rollback import (
+    RollbackManager
+)
+
+from tools.file_editor.transaction import (
+    TransactionManager
+)
+
+
 total_start = time.time()
 
 
-print("Loading project...")
-
-t = time.time()
-
-loader = ProjectLoader()
-
-project = loader.load(
-    r"C:\Users\kanan\Desktop\ai-assistant\backend"
-)
-
-print(
-    f"Files found: {project.total_files}"
-)
-
-print(
-    f"Project Load Time: "
-    f"{time.time() - t:.2f}s"
-)
-
-
-
-print("\nLoading embedding model...")
-
-t = time.time()
-
-model_loader = EmbeddingModelLoader()
-
-model = model_loader.load()
-
-embedder = Embedder(model)
-
-print("Model loaded")
-
-print(
-    f"Embedding Model Load Time: "
-    f"{time.time() - t:.2f}s"
-)
-
-
-
-t = time.time()
-
-chunker = Chunker()
-
-vector_store = VectorStore(
-    dimension=384
-)
-
-embedding_manager = EmbeddingManager(
-    chunker,
-    embedder,
-    vector_store
-)
-
-print("\nIndexing project...")
-
-embedding_manager.index_project(
-    project.files
-)
-
-print(
-    f"Total vectors: "
-    f"{vector_store.total_vectors()}"
-)
-
-print(
-    f"Indexing Time: "
-    f"{time.time() - t:.2f}s"
-)
-
-
-print("\nLoading planner model...")
-
-t = time.time()
+print("Loading models...")
 
 model_manager = ModelManager()
 
 planner = PlannerAgent(
     model_manager,
-    embedding_manager
+    None
 )
 
-print("Planner loaded")
-
-print(
-    f"Planner Init Time: "
-    f"{time.time() - t:.2f}s"
+coder = CoderAgent(
+    model_manager
 )
 
+print("Models loaded")
 
-print("\nGenerating plan...")
 
-t = time.time()
+backup_manager = BackupManager()
+
+rollback_manager = RollbackManager()
+
+transaction_manager = TransactionManager(
+    backup_manager,
+    rollback_manager
+)
+
+file_editor = FileEditor()
+
+diff_generator = DiffGenerator()
+
+executor = CodeExecutor(
+    transaction_manager,
+    file_editor,
+    diff_generator
+)
+
+print("Executor loaded")
+
+
+print("\nGenerating plan...\n")
 
 plan = planner.create_plan(
     user_request=
+    "files are not  created you need to create them. "
     "Create add.py with add(a,b). "
     "Create main.py. "
     "Import add from add.py. "
     "Print add(5,7).",
-    project_tree=project.tree_text
+    project_tree=""
 )
 
-print(
-    f"Plan Generation Time: "
-    f"{time.time() - t:.2f}s"
-)
-
-
-print("\nGenerated Plan:\n")
+print("\nPlan:\n")
 
 for todo in plan.todos:
 
@@ -143,19 +103,44 @@ for todo in plan.todos:
     print()
 
 
-t = time.time()
+print("\nExecuting Todos...\n")
+
+for todo in plan.todos:
+
+    print(
+        f"Processing: {todo.title}"
+    )
+
+    result = coder.generate_code(
+        task_description=todo.description,
+        context=""
+    )
+
+    execution = executor.execute(
+        result.files
+    )
+
+    for change in execution[
+        "changes"
+    ]:
+
+        print(
+            f"\nModified: "
+            f"{change['path']}"
+        )
+
+        print(
+            change["diff"]
+        )
+
+        print()
+
+
+print("\nUnloading model...")
 
 model_manager.unload_model()
 
 print(
-    f"Model Unload Time: "
-    f"{time.time() - t:.2f}s"
-)
-
-
-print("\nDone")
-
-print(
-    f"Total Runtime: "
+    f"\nTotal Runtime: "
     f"{time.time() - total_start:.2f}s"
 )
