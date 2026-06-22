@@ -9,9 +9,11 @@ class PlannerAgent:
 
     def __init__(
         self,
-        model_manager
+        model_manager,
+        embedding_manager
     ):
         self.model_manager = model_manager
+        self.embedding_manager = embedding_manager
 
     def create_plan(
         self,
@@ -19,10 +21,40 @@ class PlannerAgent:
         project_tree: str
     ):
 
+        results = self.embedding_manager.search(
+            user_request,
+            k=10
+        )
+
+        print("\n===== RETRIEVED CONTEXT =====\n")
+
+        for result in results:
+
+            print(
+                f"\nFILE: {result.file_path}\n"
+            )
+
+            print(result.text)
+
+            print(
+                "\n" + "=" * 60 + "\n"
+            )
+
+        retrieved_context = ""
+
+        for result in results:
+
+            retrieved_context += (
+                f"\nFile: {result.file_path}\n"
+                f"{result.text}\n"
+            )
+
         prompt = (
             PLANNER_SYSTEM_PROMPT
             + "\n\nRepository Structure:\n"
             + project_tree
+            + "\n\nRelevant Code:\n"
+            + retrieved_context
             + "\n\nUser Request:\n"
             + user_request
         )

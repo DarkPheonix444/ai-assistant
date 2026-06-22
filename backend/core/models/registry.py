@@ -16,11 +16,11 @@ MODEL_REGISTRY = {
     "coder": ModelConfig(
         name="coder",
         model_type="coder",
-        model_path="models/qwen2.5-coder-7b.gguf",
+        model_path="models\coder\qwen2.5-coder-7b-instruct-q5_k_m.gguf",
         context_window=8192,
         max_tokens=4096,
         temperature=0.1,
-        is_available=False
+        is_available=True
     ),
 
     "reviewer": ModelConfig(
